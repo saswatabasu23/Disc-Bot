@@ -1,7 +1,8 @@
-import os
+from dotenv import load_dotenv
 from pickle import TRUE, FALSE
 import requests
 import discord
+
 
 bot = discord.Client()
 gameStarted = FALSE
@@ -10,8 +11,8 @@ answer = ""
 currentScore = 0
 currentQuestion = 1
 
-
-TOKEN = os.getenv('TOKEN')
+TOKEN = load_dotenv()['BOT_TOKEN']
+print(TOKEN)
 
 
 @bot.event
@@ -67,5 +68,5 @@ async def loadQuestion(api, msgSender):
     else:
         print(f"ma ka bhosada {response.status_code}")
 
-# await message.channel.send("saswata lodu h")
+
 bot.run(TOKEN)

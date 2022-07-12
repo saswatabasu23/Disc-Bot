@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from pickle import TRUE, FALSE
 import requests
 import discord
@@ -11,8 +10,7 @@ answer = ""
 currentScore = 0
 currentQuestion = 1
 
-TOKEN = load_dotenv()['BOT_TOKEN']
-print(TOKEN)
+TOKEN = "OTk2NDQ5OTI5MDg0MDE0NjEy.GenFH3.anIjseHT05yOL4xw0vBfSNeMWYwM27Lvhs3LgQ"
 
 
 @bot.event

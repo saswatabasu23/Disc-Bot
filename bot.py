@@ -1,7 +1,10 @@
-from pickle import TRUE, FALSE
+import os
+from doctest import FAIL_FAST
+from email import message
+from glob import glob
+from pickle import FALSE, TRUE
 import requests
 import discord
-
 
 bot = discord.Client()
 gameStarted = FALSE
@@ -9,8 +12,7 @@ msg = ""
 answer = ""
 currentScore = 0
 currentQuestion = 1
-
-TOKEN = "OTk2NDQ5OTI5MDg0MDE0NjEy.GenFH3.anIjseHT05yOL4xw0vBfSNeMWYwM27Lvhs3LgQ"
+TOKEN = os.environ.get('BOT_TOKEN')
 
 
 @bot.event
@@ -27,6 +29,7 @@ async def on_message(message):
     global gameStarted
     global msg
     global currentScore
+    global currentQuestion
     if gameStarted == TRUE:
         if message.content == "True" or message.content == "False" or message.content == "true" or message.content == "false":
             if answer == message.content:
@@ -36,21 +39,22 @@ async def on_message(message):
             else:
                 await message.channel.send("wrong answer!")
                 await message.channel.send(f"current score: {currentScore}")
-            await loadQuestion("https://opentdb.com/api.php?amount=1&category=26&difficulty=easy&type=boolean", message.channel)
+            await loadQuestion("http://127.0.0.1:5000/load_questions", message.channel)
         # hit api
     if message.content == "-play":
         await message.channel.send("RULES: A question will be popped and you have to answer True/False. use -stop to stop quiz. Final" +
                                    "score will be displayed! Enjoy the quiz!!")
         gameStarted = TRUE
         msg = message.channel
-        await loadQuestion("https://opentdb.com/api.php?amount=1&category=26&difficulty=easy&type=boolean", message.channel)
+        await loadQuestion("http://127.0.0.1:5000/load_questions", message.channel)
     elif message.content == "-stop":
         gameStarted = FALSE
+        currentQuestion = 1
         await message.channel.send(f"final score is: {currentScore}")
+        currentScore = 0
 
 
 async def loadQuestion(api, msgSender):
-
     global answer
     global currentScore
     global currentQuestion
@@ -58,13 +62,12 @@ async def loadQuestion(api, msgSender):
     if response.status_code == 200:
         print("successfully fetched the data")
         responseInJson = response.json()
-        question = responseInJson['results'][0]['question']
-        answer = responseInJson['results'][0]['correct_answer']
+        question = responseInJson['question']
+        answer = responseInJson['answer']
         await msgSender.send(f"{currentQuestion}) {question}")
         print(f"{currentQuestion}) {question}")
         currentQuestion += 1
     else:
-        print(f"ma ka bhosada {response.status_code}")
-
+        print(f"{response.status_code}")
 
 bot.run(TOKEN)
